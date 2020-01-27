@@ -1,7 +1,8 @@
 let CACHE_NAME = 'site';
 let urlsToCache = [
   '/',
-  '/completed'
+  '/completed',
+  'https://appu-sm.github.io/site/static/js/components/Investments.js'
 ];
 
 // Install a service worker
