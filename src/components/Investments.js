@@ -44,8 +44,12 @@ class Investments extends React.Component {
             }
             this.setState({
                 data: newState
-            })
-        })
+            });
+            localStorage.setItem("localData", JSON.stringify(newState));
+        });
+        if(this.state.data == null || this.state.data == []){
+            this.state.data = JSON.parse(localStorage.getItem("localData"));
+        }
     }
 
     render() {
