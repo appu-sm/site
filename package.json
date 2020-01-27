@@ -16,8 +16,8 @@
     "serve": "11.3.0"
   },
   "scripts": {
-    "start": "serve -s build",
-    "build": "react-scripts build && rename build docs",
+    "start": "react-scripts start",
+    "build": "react-scripts build && IF exist docs ( rmdir /Q/S docs ) && rename build docs",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

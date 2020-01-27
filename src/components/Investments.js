@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MaterialTable from 'material-table';
+import firebase from '../firebase';
 
 class Investments extends React.Component {
 
@@ -12,14 +13,7 @@ class Investments extends React.Component {
                 { title: 'Amount', field: 'amount', type: 'numeric', initialEditValue: '0' },
                 { title: 'Date Invested', field: 'date' },
             ],
-            data: [
-                { id: 1, name: 'Stocks', type: 'Stocks', amount: '150000', date: '22-01-2020' },
-                { id: 2, name: 'Mutual Fund', type: 'Mutual Fund', amount: '250000', date: '20-05-2019' },
-                { id: 3, name: 'Elss', type: 'Mutual Fund', amount: '250000', date: '20-05-2019', parentId: 2 },
-                { id: 4, name: 'Large Cap', type: 'Mutual Fund', amount: '250000', date: '20-05-2019', parentId: 2 },
-                { id: 5, name: 'Gold Bond', type: 'Gold Bond', amount: '37380', date: '15-10-2019' },
-                { id: 6, name: 'Sopra Steria', type: 'Stocks', amount: '131000', date: '20-05-2019', parentId: 1 },
-            ],
+            data: [],
             options:{
                 headerStyle: {
                     backgroundColor: '#01579b',
@@ -31,7 +25,29 @@ class Investments extends React.Component {
             },
         }
     }
-  
+    
+    componentDidMount(){
+        const itemsRef = firebase.database().ref('investments');
+        itemsRef.on('value', (snapshot) => {
+            let items = snapshot.val();
+            let newState = [];
+            console.log(items);
+            for(let item in items){
+                newState.push({
+                    fid: Object.keys(items)[0],
+                    id: items[item].id,
+                    name: items[item].name,
+                    type: items[item].type, 
+                    amount: items[item].amount, 
+                    date: items[item].date
+                })
+            }
+            this.setState({
+                data: newState
+            })
+        })
+    }
+
     render() {
         return (
             <MaterialTable
@@ -47,6 +63,8 @@ class Investments extends React.Component {
                                 {
                                     const data = this.state.data;
                                     newData.id = (data.length) + 1;
+                                    const itemsRef = firebase.database().ref('investments');
+                                    itemsRef.push(newData);
                                     data.push(newData);
                                     this.setState({ data }, () => resolve());
                                 }
@@ -73,6 +91,9 @@ class Investments extends React.Component {
                                     const index = data.indexOf(oldData);
                                     data.splice(index, 1);
                                     this.setState({ data }, () => resolve());
+
+                                    const itemRef = firebase.database().ref(`/investments/${oldData.fid}`);
+                                    itemRef.remove();
                                 }
                                 resolve()
                             }, 1000)
@@ -83,4 +104,4 @@ class Investments extends React.Component {
     }
 }
 
-export default Investments
+export default Investments;
