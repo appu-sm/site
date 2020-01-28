@@ -47,15 +47,20 @@ class Investments extends React.Component {
             });
             localStorage.setItem("localData", JSON.stringify(newState));
         });
-        if(this.state.data == null || this.state.data == []){
-            this.state.data = JSON.parse(localStorage.getItem("localData"));
+        var connectedRef = firebase.database().ref(".info/connected");
+        connectedRef.on("value", (snap) => {
+        if (snap.val() !== true) {
+            if(this.state.data == null || this.state.data == []){
+                this.state.data = JSON.parse(localStorage.getItem("localData"));
+            }
         }
+        });
     }
 
     render() {
         return (
             <MaterialTable
-                title="Editable Preview"
+                title="Investments"
                 columns={this.state.columns}
                 data={[...this.state.data]}
                 parentChildData={(row, rows) => rows.find(a => a.id === row.parentId)}
