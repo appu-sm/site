@@ -27,33 +27,13 @@ class Investments extends React.Component {
     }
     
     componentDidMount(){
-        const itemsRef = firebase.database().ref('investments');
-        itemsRef.on('value', (snapshot) => {
-            let items = snapshot.val();
-            let newState = [];
-            console.log(items);
-            for(let item in items){
-                newState.push({
-                    fid: Object.keys(items)[0],
-                    id: items[item].id,
-                    name: items[item].name,
-                    type: items[item].type, 
-                    amount: items[item].amount, 
-                    date: items[item].date
-                })
-            }
+        const itemsRef = firebase.collection('investments').get().then(querySnapshot => {
+            const data = querySnapshot.docs.map(doc => doc.data());
+            console.log("data");
+            console.log(data);
             this.setState({
-                data: newState
+                data: data
             });
-            localStorage.setItem("localData", JSON.stringify(newState));
-        });
-        var connectedRef = firebase.database().ref(".info/connected");
-        connectedRef.on("value", (snap) => {
-        if (snap.val() !== true) {
-            if(this.state.data == null || this.state.data == []){
-                this.state.data = JSON.parse(localStorage.getItem("localData"));
-            }
-        }
         });
     }
 
@@ -72,8 +52,9 @@ class Investments extends React.Component {
                                 {
                                     const data = this.state.data;
                                     newData.id = (data.length) + 1;
-                                    const itemsRef = firebase.database().ref('investments');
-                                    itemsRef.push(newData);
+                                    firebase.collection('investments').doc("doc-" + newData.id).set(newData)
+                                        .then(() => console.log("Document written"))
+                                        .catch((error) => console.error("Error writing document", error));
                                     data.push(newData);
                                     this.setState({ data }, () => resolve());
                                 }
@@ -101,8 +82,7 @@ class Investments extends React.Component {
                                     data.splice(index, 1);
                                     this.setState({ data }, () => resolve());
 
-                                    const itemRef = firebase.database().ref(`/investments/${oldData.fid}`);
-                                    itemRef.remove();
+                                    firebase.collection('investments').doc("doc-" + (index + 1)).delete();
                                 }
                                 resolve()
                             }, 1000)

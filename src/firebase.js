@@ -13,4 +13,10 @@ const config = {
 
 firebase.initializeApp(config);
 
-export default firebase;
+firebase.firestore().enablePersistence().catch((err) => {
+  if(err.code == 'unimplemented'){
+    alert("Oflline feature not available");
+  }
+});
+const firebaseApp = firebase.firestore();
+export default firebaseApp;
