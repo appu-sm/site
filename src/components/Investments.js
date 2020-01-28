@@ -27,12 +27,15 @@ class Investments extends React.Component {
     }
     
     componentDidMount(){
-        const itemsRef = firebase.collection('investments').get().then(querySnapshot => {
+        firebase.collection('investments').get().then(querySnapshot => {
             const data = querySnapshot.docs.map(doc => doc.data());
-            console.log("data");
-            console.log(data);
             this.setState({
                 data: data
+            });
+            localStorage.setItem("localData", JSON.stringify(data));
+        }).catch(() => {
+            this.setState({
+                data: localStorage.getItem("localData")
             });
         });
     }
