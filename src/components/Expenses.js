@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import MaterialTable from 'material-table';
 import firebase from '../firebase';
-import { NavLink, BrowserRouter } from "react-router-dom";
 
-class Investments extends React.Component {
+class Expenses extends React.Component {
 
     constructor(props) {
         super(props);
@@ -28,7 +27,7 @@ class Investments extends React.Component {
     }
     
     componentDidMount(){
-        firebase.collection('investments').get().then(querySnapshot => {
+        firebase.collection('expenses').get().then(querySnapshot => {
             const data = querySnapshot.docs.map(doc => doc.data());
             this.setState({
                 data: data
@@ -43,15 +42,8 @@ class Investments extends React.Component {
 
     render() {
         return (
-            <>
-            <BrowserRouter>
-        <div>
-        <NavLink to="expenses"><button>Go to Expense</button></NavLink>
-        </div>
-      </BrowserRouter>
-            
             <MaterialTable
-                title="Investments"
+                title="Expenses"
                 columns={this.state.columns}
                 data={[...this.state.data]}
                 parentChildData={(row, rows) => rows.find(a => a.id === row.parentId)}
@@ -63,7 +55,7 @@ class Investments extends React.Component {
                                 {
                                     const data = this.state.data;
                                     newData.id = (data.length) + 1;
-                                    firebase.collection('investments').doc("doc-" + newData.id).set(newData)
+                                    firebase.collection('expenses').doc("doc-" + newData.id).set(newData)
                                         .then(() => console.log("Document written"))
                                         .catch((error) => console.error("Error writing document", error));
                                     data.push(newData);
@@ -93,16 +85,15 @@ class Investments extends React.Component {
                                     data.splice(index, 1);
                                     this.setState({ data }, () => resolve());
 
-                                    firebase.collection('investments').doc("doc-" + (index + 1)).delete();
+                                    firebase.collection('expenses').doc("doc-" + (index + 1)).delete();
                                 }
                                 resolve()
                             }, 1000)
                         }),
                 }}
             />
-            </>
         );
     }
 }
 
-export default Investments;
+export default Expenses;
